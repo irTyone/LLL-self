@@ -24,7 +24,7 @@ config = {
     "vocab_size": 119547
 }
 WORLD_SIZE = 6  # 使用 6 块 GPU
-TOKENIZER = "gpt2"
+
 FILE_PATH = "DATASET-ch/text_10-20-18-18-19.json"
 BLOCK_SIZE = 256
 STRIDE = 10
@@ -81,7 +81,7 @@ def train_ddp(rank):
     torch.cuda.set_device(rank)
 
     device = torch.device(f"cuda:{rank}")
-    tokenizer = AutoTokenizer.from_pretrained(TOKENIZER)
+    tokenizer = AutoTokenizer.from_pretrained(TOKENIER)
     tokenizer.pad_token = tokenizer.eos_token
 
     # 初始化 log 文件（只在 rank 0）
@@ -124,7 +124,7 @@ def train_ddp(rank):
 
         # rank 0 保存 checkpoint
         if rank == 0:
-            checkpoint_path = os.path.join(SAVE_PATH, "model_latest.pth")  # 固定文件名
+            checkpoint_path = os.path.join(SAVE_PATH, "model_latest.pth")  
             torch.save({
             'epoch': epoch+1,
             'model_state_dict': model.module.state_dict(),

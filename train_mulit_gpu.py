@@ -25,7 +25,7 @@ config = {
     "vocab_size": 119547
 }
 WORLD_SIZE = 6  # 使用 6 块 GPU
-TOKENIZER = "gpt2"  # 替换为你的 tokenizer
+
 FILE_PATH = "DATASET-ch/text_10-20-18-18-19.json"
 BLOCK_SIZE = 256
 STRIDE = 10
@@ -45,7 +45,7 @@ def train_ddp(rank):
     device = torch.device(f"cuda:{rank}")
 
     # Tokenizer & Dataloader
-    tokenizer = AutoTokenizer.from_pretrained(TOKENIZER)
+    tokenizer = AutoTokenizer.from_pretrained(TOKENIER)
     tokenizer.pad_token = tokenizer.eos_token
     dataset = TextDataset(FILE_PATH, tokenizer, BLOCK_SIZE, STRIDE)
     sampler = DistributedSampler(dataset, num_replicas=WORLD_SIZE, rank=rank, shuffle=True)
