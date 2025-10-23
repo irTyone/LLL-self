@@ -1,10 +1,15 @@
+from math import e
+from ntpath import isfile
 from datasets import load_dataset, DownloadConfig
 import json
 from itertools import islice
 from tqdm import tqdm
-from core.config import DATASET, DATA_SAVE,beijingtz,DATA_SAVE_CH,SUBSET_CH
+from core.config import DATASET, DATA_SAVE,beijingtz,DATA_SAVE_CH,SUBSET_CH,SUBSET,TOKENIER
 from datetime import  datetime
 import os
+from transformers import AutoTokenizer
+from utils.utils import  remove_html_and_newlines,clean_chinese_text,clean_english_text
+os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
 class Dataloader:
     def __init__(self, dataset, subset, offset=0, max_retries=5):
         self.dataset = dataset
@@ -47,7 +52,10 @@ class Dataloader:
                 json.dump(batch_data, f, ensure_ascii=False)
 
 
+ 
 
+
+        
 
 
 
@@ -55,5 +63,5 @@ if __name__ == '__main__':
     with open("record_ch.json",'r',encoding='utf-8') as f:
         cursor=json.load(f)
     for i in range(1000):
-        ds = Dataloader("wikimedia/wikipedia", SUBSET_CH,offset=cursor["offset"])
-        ds.data_download(data_save=DATA_SAVE_CH,record_json="record_ch.json")
+        ds = Dataloader("wikimedia/wikipedia", SUBSET,offset=cursor["offset"])
+        ds.data_download(data_save=DATA_SAVE,record_json="record_ch.json")

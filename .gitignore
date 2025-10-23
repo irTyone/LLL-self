@@ -1,12 +1,14 @@
-DATASET-ch/
+dataset-ch/
 dataset-en/
-# 忽略虚拟环境
+
 venv/
 .env/
 .idea/
-
+shell.txt
 # Python 常见忽略项
 __pycache__/
 *.py[cod]
 *.pyo
 *.log
+checkpoints
+log
