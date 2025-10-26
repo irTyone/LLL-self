@@ -11,7 +11,7 @@ class LLGPT(nn.Module):
         self.transformer_block_num=is_transformer_block
         self.embedding=nn.Embedding(config.get("vocab_size"),config.get("emd_dim"))
         print(self.embedding.weight.shape)
-        self.posembeding=PositionalEncoding(config.get("emd_dim"),max_len=config.get("vocab_size"))
+        self.posembeding=PositionalEncoding(config.get("emd_dim"))
         self.base_trf=nn.ModuleList()
         self.base_fc=nn.ModuleList()
         for _ in range(block_nums):
@@ -30,7 +30,7 @@ class LLGPT(nn.Module):
         self.logits=nn.Linear(config.get("emd_dim"),config.get("vocab_size"))
 
     def forward(self,x):
-        hidden_value=self.embedding(x)
+        hidden_value=self.embedding(x)* (self.embedding.embedding_dim ** 0.5)
         hidden_value=self.posembeding(hidden_value)
         for trf,fc in zip(self.base_trf,self.base_fc):
             hidden_value=hidden_value+trf(hidden_value)

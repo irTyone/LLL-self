@@ -1,6 +1,6 @@
 dataset-ch/
 dataset-en/
-
+.pkl
 venv/
 .env/
 .idea/
@@ -12,3 +12,5 @@ __pycache__/
 *.log
 checkpoints
 log
+dataset-ch-org
+dataset-en-org
