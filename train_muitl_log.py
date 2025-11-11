@@ -69,7 +69,7 @@ def collate_batch(batch):
 # =========================
 # 单轮训练
 # =========================
-def train_one_epoch(rank, model, dataloader, optimizer, scaler, criterion, scheduler, epoch):
+def train_one_epoch(rank, model, dataloader, optimizer,  criterion, scheduler, epoch):
     model.train()
     total_loss = 0.0
     optimizer.zero_grad(set_to_none=True)
@@ -78,9 +78,9 @@ def train_one_epoch(rank, model, dataloader, optimizer, scaler, criterion, sched
         input_ids = input_ids.to(rank, non_blocking=True)
         target_ids = target_ids.to(rank, non_blocking=True)
 
-        with autocast('cuda'):
-            outputs = model(input_ids)
-            loss = criterion(outputs.view(-1, outputs.size(-1)), target_ids.view(-1))
+        # with autocast('cuda'):
+        outputs = model(input_ids)
+        loss = criterion(outputs.view(-1, outputs.size(-1)), target_ids.view(-1))
 
             # 检查 NaN / inf
             # if not torch.isfinite(loss):
@@ -88,16 +88,16 @@ def train_one_epoch(rank, model, dataloader, optimizer, scaler, criterion, sched
             #     optimizer.zero_grad(set_to_none=True)
             #     continue
 
-            loss = loss / GRAD_ACCUM_STEPS
+        loss = loss / GRAD_ACCUM_STEPS
 
-        scaler.scale(loss).backward()
+        # scaler.scale(loss).backward()
 
         # 梯度累积
         if (step + 1) % GRAD_ACCUM_STEPS == 0:
-            scaler.unscale_(optimizer)
+            # scaler.unscale_(optimizer)
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-            scaler.step(optimizer)
-            scaler.update()
+            # scaler.step(optimizer)
+            # scaler.update()
             scheduler.step()
 
             optimizer.zero_grad(set_to_none=True)
@@ -140,7 +140,7 @@ def train_ddp(rank, world_size, resume=False):
     optimizer = optim.AdamW(model.parameters(), lr=LR)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=1000000)
     criterion = nn.CrossEntropyLoss()
-    scaler = GradScaler('cuda')
+    # scaler = GradScaler('cuda')
 
     selector = DynamicProb()
     ch_i, en_i, start_epoch = 0, 0, 0
@@ -201,7 +201,7 @@ def train_ddp(rank, world_size, resume=False):
         )
         sampler.set_epoch(epoch)
 
-        avg_loss = train_one_epoch(rank, model, dataloader, optimizer, scaler, criterion, scheduler, epoch)
+        avg_loss = train_one_epoch(rank, model, dataloader, optimizer, criterion, scheduler, epoch)
 
         dist.barrier()
         if rank == 0:
@@ -226,4 +226,4 @@ if __name__ == "__main__":
     os.environ["MASTER_ADDR"] = "127.0.0.1"
     os.environ["MASTER_PORT"] = str(port)
     print(f"Using MASTER_ADDR={os.environ['MASTER_ADDR']} MASTER_PORT={os.environ['MASTER_PORT']}")
-    mp.spawn(train_ddp, args=(WORLD_SIZE,False), nprocs=WORLD_SIZE)
+    mp.spawn(train_ddp, args=(WORLD_SIZE,True), nprocs=WORLD_SIZE)

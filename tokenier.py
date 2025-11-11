@@ -52,13 +52,6 @@ class Dataloader:
                 json.dump(batch_data, f, ensure_ascii=False)
 
 
- 
-
-
-        
-
-
-
 if __name__ == '__main__':
     with open("record_ch.json",'r',encoding='utf-8') as f:
         cursor=json.load(f)

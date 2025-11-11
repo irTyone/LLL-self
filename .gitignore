@@ -1,6 +1,6 @@
 dataset-ch/
 dataset-en/
-.pkl
+*.pkl
 venv/
 .env/
 .idea/
@@ -14,3 +14,5 @@ checkpoints
 log
 dataset-ch-org
 dataset-en-org
+datafile_check.py
+nohup.out
